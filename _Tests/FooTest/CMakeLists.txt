@@ -1,6 +1,6 @@
 #a sample cmakelists.txt for a unit test
 
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 2.8)
 project(FooTest)
 
 #the sources
