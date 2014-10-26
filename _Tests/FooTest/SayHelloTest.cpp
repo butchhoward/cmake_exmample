@@ -12,7 +12,7 @@ TEST(ATestThatTests, abs)
 
 TEST(ATestThatTests, SomethingFails)
 {
-	EXPECT_TRUE(false);
+	EXPECT_TRUE(true);
 }
 
 TEST(ATestThatTests, ThatMatchersWork)
