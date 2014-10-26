@@ -14,8 +14,9 @@ else()
         --force-new-ctest-process --output-on-failure)
 endif()	
 
+set(TOOLS_DIR "${CMAKE_SOURCE_DIR}/Tools")
 #build gmock from a known source location. gmock must be built with the same compile flags as the project under test or bad things happen
-set(GMOCK_DIR "/Users/butchhoward/Documents/projects/tools/gmock-1.7.0")
+set(GMOCK_DIR "${TOOLS_DIR}/gmock")
 add_subdirectory( ${GMOCK_DIR} ${CMAKE_CURRENT_BINARY_DIR}/gmock)
 include_directories(
 	${GMOCK_DIR}/gtest/include
