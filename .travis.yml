@@ -8,4 +8,7 @@ before_script:
   - cd build
   - cmake ..
 
+notifications:
+  email: false
+
 script: make && make check
