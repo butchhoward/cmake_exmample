@@ -7,6 +7,6 @@
 ///
 /// This computes the mean and the first moment of a vector of double values.
 ///
-std::tuple<double, double> accumulate_vector(
+std::tuple<double, double> first_two(
     const std::vector<double>& values ///< The vector of values
 );

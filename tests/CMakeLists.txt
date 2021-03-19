@@ -1,10 +1,12 @@
 # Testing library
+include(FetchContent)
 FetchContent_Declare(
-  catch
-  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-  GIT_TAG v2.9.1)
-FetchContent_MakeAvailable(catch)
-# Adds Catch2::Catch2
+    googletest
+    GIT_REPOSITORY https://github.com/google/googletest.git 
+    GIT_TAG release-1.10.0
+)
+FetchContent_MakeAvailable(googletest)
+# ${gtest_build_include_dirs}
 
 # Tests need to be added as executables first
 add_executable(testlib testlib.cpp)
@@ -13,7 +15,7 @@ add_executable(testlib testlib.cpp)
 target_compile_features(testlib PRIVATE cxx_std_17)
 
 # Should be linked to the main library, as well as the Catch2 testing library
-target_link_libraries(testlib PRIVATE modern_library Catch2::Catch2)
+target_link_libraries(testlib PRIVATE gtest_main modern_library )
 
 # If you register a test, then ctest and make test will run it.
 # You can also run examples and check the output, as well.

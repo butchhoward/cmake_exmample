@@ -1,9 +1,9 @@
-# Works with 3.11 and tested through 3.19
-cmake_minimum_required(VERSION 3.11...3.19)
+# Works with 3.14 and tested through 3.19
+cmake_minimum_required(VERSION 3.14...3.19)
 
 # Project name and a few useful settings. Other commands can pick up the results
 project(
-  ModernCMakeExample
+  Example
   VERSION 0.1
   DESCRIPTION "An example project with CMake"
   LANGUAGES CXX)
@@ -36,21 +36,13 @@ endif()
 
 # FetchContent added in CMake 3.11, downloads during the configure step
 include(FetchContent)
-# FetchContent_MakeAvailable was not added until CMake 3.14; use our shim
-if(${CMAKE_VERSION} VERSION_LESS 3.14)
-  include(cmake/add_FetchContent_MakeAvailable.cmake)
-endif()
-
-# Accumulator library
-# This is header only, so could be replaced with git submodules or FetchContent
-find_package(Boost REQUIRED)
-# Adds Boost::boost
 
 # Formatting library
 FetchContent_Declare(
   fmtlib
   GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-  GIT_TAG 5.3.0)
+  GIT_TAG 5.3.0
+)
 FetchContent_MakeAvailable(fmtlib)
 # Adds fmt::fmt
 
