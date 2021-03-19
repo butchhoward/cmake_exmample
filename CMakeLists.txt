@@ -1,35 +1,68 @@
-cmake_minimum_required(VERSION 2.8)
+# Works with 3.11 and tested through 3.19
+cmake_minimum_required(VERSION 3.11...3.19)
 
-#enable testing, this enables the use of ctest
-enable_testing()
+# Project name and a few useful settings. Other commands can pick up the results
+project(
+  ModernCMakeExample
+  VERSION 0.1
+  DESCRIPTION "An example project with CMake"
+  LANGUAGES CXX)
 
-#the test target runs ctest such that it suppresses the output from the actual test program
-#this creates a 'check' target that passes the --output-on-failure flag to ctest so the original output can be seen
-if (CMAKE_CONFIGURATION_TYPES)
-    add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} 
-        --force-new-ctest-process --output-on-failure 
-        --build-config "$<CONFIGURATION>")
-else()
-    add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} 
-        --force-new-ctest-process --output-on-failure)
-endif()	
+# Only do these if this is the main project, and not if it is included through add_subdirectory
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 
-set(TOOLS_DIR "${CMAKE_SOURCE_DIR}/Tools")
-#build gmock from a known source location. gmock must be built with the same compile flags as the project under test or bad things happen
-set(GMOCK_DIR "${TOOLS_DIR}/gmock")
-add_subdirectory( ${GMOCK_DIR} ${CMAKE_CURRENT_BINARY_DIR}/gmock)
-include_directories(
-	${GMOCK_DIR}/gtest/include
-	${GMOCK_DIR}/include
-	${CMAKE_CURRENT_SOURCE_DIR}
-)
+  # Optionally set things like CMAKE_CXX_STANDARD, CMAKE_POSITION_INDEPENDENT_CODE here
 
-include_directories(
-	${CMAKE_CURRENT_SOURCE_DIR}
-)
+  # Let's ensure -std=c++xx instead of -std=g++xx
+  set(CMAKE_CXX_EXTENSIONS OFF)
 
-#add the libraries to build
-add_subdirectory( sayHello )
+  # Let's nicely support folders in IDEs
+  set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-#add the unit tests to build
-add_subdirectory( _Tests/FooTest )
+  # Testing only available if this is the main app
+  # Note this needs to be done in the main CMakeLists
+  # since it calls enable_testing, which must be in the
+  # main CMakeLists.
+  include(CTest)
+
+  # Docs only available if this is the main app
+  find_package(Doxygen)
+  if(Doxygen_FOUND)
+    add_subdirectory(docs)
+  else()
+    message(STATUS "Doxygen not found, not building docs")
+  endif()
+endif()
+
+# FetchContent added in CMake 3.11, downloads during the configure step
+include(FetchContent)
+# FetchContent_MakeAvailable was not added until CMake 3.14; use our shim
+if(${CMAKE_VERSION} VERSION_LESS 3.14)
+  include(cmake/add_FetchContent_MakeAvailable.cmake)
+endif()
+
+# Accumulator library
+# This is header only, so could be replaced with git submodules or FetchContent
+find_package(Boost REQUIRED)
+# Adds Boost::boost
+
+# Formatting library
+FetchContent_Declare(
+  fmtlib
+  GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+  GIT_TAG 5.3.0)
+FetchContent_MakeAvailable(fmtlib)
+# Adds fmt::fmt
+
+# The compiled library code is here
+add_subdirectory(src)
+
+# The executable code is here
+add_subdirectory(apps)
+
+# Testing only available if this is the main app
+# Emergency override MODERN_CMAKE_BUILD_TESTING provided as well
+if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME OR MODERN_CMAKE_BUILD_TESTING)
+   AND BUILD_TESTING)
+  add_subdirectory(tests)
+endif()
